@@ -51,5 +51,4 @@ func (r *RoomPostgres) Create(list dashboard.RoomCreating, managerId int) (int, 
 	}
 
 	return id, tx.Commit()
-
 }
