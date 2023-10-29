@@ -22,6 +22,15 @@ type RoomCreating struct {
 	Array  string `json:"array"`
 }
 
+type Task struct {
+	TaskId      int    `json:"task_id" db:"task_id"`
+	Title       string `json:"title" db:"title"`
+	Description string `json:"description" db:"description"`
+	Priority    string `json:"priority" db:"priority"`
+	EmployeeId  int    `json:"employee_id" db:"employee_id"`
+	DeskId      int    `json:"desk_id" db:"desk_id"`
+}
+
 // type TodoItem struct {
 // 	Id          int    `json:"id" db:"id"`
 // 	Title       string `json:"title" db:"title" binding:"required"`

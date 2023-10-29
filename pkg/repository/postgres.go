@@ -11,6 +11,7 @@ const (
 	deskTable     = "desk"
 	roomTable     = "room"
 	taskRoomTable = "task_room"
+	taskTable     = "task"
 
 	// todoItemsTable  = "todo_items"
 	// listsItemsTable = "lists_items"

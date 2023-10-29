@@ -15,7 +15,8 @@ create table public.Task (
 	description varchar(64) not null,
 	priority varchar(64) not null,
 	employee_id serial4 NOT null references public.user(user_id),
-	author_id serial4 NOT null references public.user(user_id)
+	author_id serial4 NOT null references public.user(user_id),
+	status varchar(30) not null
 );
 
 create table public.Comment (

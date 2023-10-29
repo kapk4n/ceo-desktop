@@ -12,11 +12,6 @@ type RoomPostgres struct {
 	db *sqlx.DB
 }
 
-// 10.67.0.0/12
-
-// 10.01000000.00001|000.01001101
-// 10.64.8.77/21
-
 func NewRoomPostgres(db *sqlx.DB) *RoomPostgres {
 	return &RoomPostgres{db: db}
 }

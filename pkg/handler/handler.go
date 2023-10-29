@@ -127,6 +127,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			// lists.PUT("/:id", h.updateList)
 			// lists.DELETE("/:id", h.deleteList)
 		}
+		tasks := api.Group("/tasks")
+		{
+			tasks.POST("/", h.createTask)
+			// lists.GET("/", h.getAllList)
+			// lists.GET("/:id", h.getListById)
+			// lists.PUT("/:id", h.updateTask)
+			// lists.DELETE("/:id", h.deleteList)
+		}
 	}
 
 	//api := router.Group("/api", h.userIdentity)

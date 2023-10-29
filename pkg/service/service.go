@@ -15,6 +15,7 @@ type Service struct {
 	Authorization
 	Desk
 	Room
+	Task
 }
 
 type Desk interface {
@@ -33,6 +34,14 @@ type Room interface {
 	// Update(userId, listId int, input todo.UpdateListInput) error
 }
 
+type Task interface {
+	Create(list dashboard.Task, authorId int) (int, error)
+	// GetAll(userId int) ([]dashboard.Desk, error)
+	// GetById(userId, listId int) (dashboard.Desk, error)
+	// Delete(userId, listId int) error
+	// Update(ist dashboard.Task, authorId int) error
+}
+
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		// Cards:      NewZaprosServiceCard(repos.Cards),
@@ -46,6 +55,7 @@ func NewService(repos *repository.Repository) *Service {
 		Authorization: NewAuthService(repos.Authorization),
 		Desk:          NewDeskService(repos.Desk),
 		Room:          NewRoomService(repos.Room),
+		Task:          NewTaskService(repos.Task),
 		// //TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 	}
 }

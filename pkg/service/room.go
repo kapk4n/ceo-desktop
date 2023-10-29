@@ -3,7 +3,6 @@ package service
 import (
 	"dashboard"
 	"dashboard/pkg/repository"
-	"fmt"
 )
 
 type RoomService struct {
@@ -15,6 +14,5 @@ func NewRoomService(repo repository.Room) *RoomService {
 }
 
 func (s *RoomService) Create(list dashboard.RoomCreating, managerId int) (int, error) {
-	fmt.Print("From service")
 	return s.repo.Create(list, managerId)
 }
