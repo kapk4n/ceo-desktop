@@ -29,6 +29,14 @@ type Task struct {
 	Priority    string `json:"priority" db:"priority"`
 	EmployeeId  int    `json:"employee_id" db:"employee_id"`
 	DeskId      int    `json:"desk_id" db:"desk_id"`
+	Status      string `json:"status" db:"status"`
+}
+
+type UpdateTaskInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Status      *string `json:"status"`
+	Priority    *string `json:"priority" db:"priority"`
 }
 
 // type TodoItem struct {

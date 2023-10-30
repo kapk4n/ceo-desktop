@@ -17,6 +17,6 @@ func (s *TaskService) Create(list dashboard.Task, authorId int) (int, error) {
 	return s.repo.Create(list, authorId)
 }
 
-// func (s *TaskService) Update(list dashboard.Task, authorId int) error {
-// 	return s.repo.Update(list, authorId)
-// }
+func (s *TaskService) Update(list dashboard.UpdateTaskInput, taskId, authorId int) error {
+	return s.repo.Update(list, taskId, authorId)
+}

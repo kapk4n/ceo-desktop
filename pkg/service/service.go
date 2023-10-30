@@ -39,7 +39,7 @@ type Task interface {
 	// GetAll(userId int) ([]dashboard.Desk, error)
 	// GetById(userId, listId int) (dashboard.Desk, error)
 	// Delete(userId, listId int) error
-	// Update(ist dashboard.Task, authorId int) error
+	Update(ist dashboard.UpdateTaskInput, taskId, authorId int) error
 }
 
 func NewService(repos *repository.Repository) *Service {
