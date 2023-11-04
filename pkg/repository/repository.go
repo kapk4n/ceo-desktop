@@ -35,6 +35,14 @@ type Task interface {
 	Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
 }
 
+type Comment interface {
+	Create(authorId int, list dashboard.Comment) (int, error)
+	// GetAll(userId int) ([]dashboard.Desk, error)
+	// GetById(userId, listId int) (dashboard.Desk, error)
+	Delete(task_id, author_id int) error
+	// Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
+}
+
 //
 //type TodoItem interface {
 //}
@@ -113,6 +121,7 @@ type Repository struct {
 	Desk
 	Room
 	Task
+	Comment
 	//TodoItem
 }
 
@@ -129,6 +138,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Authorization: NewAuthPostgres(db),
 		Desk:          NewDeskPostgeres(db),
 		Task:          NewTaskPostgres(db),
+		Comment:       NewCommentPostgres(db),
 		//TodoItem:      NewTodoItemPostgres(db),
 	}
 }

@@ -15,6 +15,7 @@ type Service struct {
 	Authorization
 	Desk
 	Room
+	Comment
 	Task
 }
 
@@ -24,6 +25,13 @@ type Desk interface {
 	// GetById(userId, listId int) (dashboard.Desk, error)
 	Delete(userId, deskId int) error
 	Update(userId, deskId int, input dashboard.UpdateDeskInput) error
+}
+type Comment interface {
+	Create(userId int, list dashboard.Comment) (int, error)
+	// GetAll(userId int) ([]dashboard.Desk, error)
+	// GetById(userId, listId int) (dashboard.Desk, error)
+	Delete(userId, deskId int) error
+	// Update(userId, deskId int, input dashboard.UpdateDeskInput) error
 }
 
 type Room interface {
@@ -56,6 +64,7 @@ func NewService(repos *repository.Repository) *Service {
 		Desk:          NewDeskService(repos.Desk),
 		Room:          NewRoomService(repos.Room),
 		Task:          NewTaskService(repos.Task),
+		Comment:       NewCommentService(repos.Comment),
 		// //TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 	}
 }

@@ -18,6 +18,12 @@ type Room struct {
 	Privacy   string
 }
 
+type Comment struct {
+	Id       int    `json:"comment_id" db:"comment_id"`
+	TaskId   int    `json:"task_id" db:"task_id"`
+	AuthorId int    `json:"comment_author_id" db:"comment_author_id"`
+	Message  string `json:"message" db:"message"`
+}
 type RoomCreating struct {
 	DeskId int    `json:"desk_id"`
 	Array  string `json:"array"`
