@@ -34,3 +34,12 @@ func (r *AuthPostgres) GetUser(login, password string) (dashboard.User, error) {
 
 	return user, err
 }
+
+// func (r *AuthPostgres) GetAll(login, password string) ([]dashboard.User, error) {
+// 	var user []dashboard.User
+// 	query := fmt.Sprintf(`SELECT * from %s`, usersTable)
+// 	log.Printf(query, login, password)
+// 	err := r.db.Get(&user, query, login, password)
+
+// 	return user, err
+// }

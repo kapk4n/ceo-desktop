@@ -31,13 +31,6 @@ func (r *TaskPostgres) Create(list dashboard.Task, authorId int) (int, error) {
 		return 0, err
 	}
 
-	// createTaskRoomQuery := fmt.Sprintf(`INSERT INTO %s (desk_id, task_id) VALUES ($1, $2) RETURNING task_room_id`, taskRoomTable)
-	// row = tx.QueryRow(createTaskRoomQuery, list.DeskId, task_id)
-	// if err := row.Scan(&task_room_id); err != nil {
-	// 	tx.Rollback()
-	// 	return 0, err
-	// }
-
 	return task_id, tx.Commit()
 }
 
@@ -102,4 +95,22 @@ func (r *TaskPostgres) Delete(task_id, authorId int) error {
 	} else {
 		return err
 	}
+}
+
+func (r *TaskPostgres) GetAll(task_id, authorId int) ([]dashboard.Task, error) {
+	var list []dashboard.Task
+	query := fmt.Sprintf("select * from %s where desk_id = $1",
+		taskTable)
+	err := r.db.Select(&list, query, authorId)
+
+	return list, err
+}
+
+func (r *TaskPostgres) GetById(task_id, authorId int) (dashboard.Task, error) {
+	var list dashboard.Task
+	query := fmt.Sprintf("select * from %s where task_id = $1",
+		taskTable)
+	err := r.db.Get(&list, query, authorId)
+
+	return list, err
 }

@@ -70,23 +70,23 @@ func (r *DeskPostgres) Delete(userId, deskId int) error {
 	return err
 }
 
-// func (r *DeskPostgres) GetAll(userId int) ([]dashboard.Desk, error) {
-// 	var lists []dashboard.Desk
-// 	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1",
-// 		deskTable, roomTable)
-// 	err := r.db.Select(&lists, query, userId)
+func (r *DeskPostgres) GetAll(userId int) ([]dashboard.Desk, error) {
+	var lists []dashboard.Desk
+	query := fmt.Sprintf("select * from %s where desk_id in (select desk_id from %s where user_id = $1)",
+		deskTable, roomTable)
+	err := r.db.Select(&lists, query, userId)
 
-// 	return lists, err
-// }
+	return lists, err
+}
 
-// func (r *DeskPostgres) GetById(userId, listId int) (dashboard.Desk, error) {
-// 	var list dashboard.Desk
-// 	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2",
-// 		deskTable, roomTable)
-// 	err := r.db.Get(&list, query, userId, listId)
+func (r *DeskPostgres) GetById(userId, deskId int) (dashboard.Desk, error) {
+	var list dashboard.Desk
+	query := fmt.Sprintf("select * from %s where desk_id = $1",
+		deskTable)
+	err := r.db.Get(&list, query, deskId)
 
-// 	return list, err
-// }
+	return list, err
+}
 
 func (r *DeskPostgres) Update(userId, deskId int, input dashboard.UpdateDeskInput) error {
 	setValues := make([]string, 0)

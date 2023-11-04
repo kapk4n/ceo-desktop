@@ -17,13 +17,13 @@ func (s *DeskService) Create(userId int, list dashboard.Desk) (int, error) {
 	return s.repo.Create(userId, list)
 }
 
-// func (s *DeskService) GetAll(userId int) ([]dashboard.Desk, error) {
-// 	return s.repo.GetAll(userId)
-// }
+func (s *DeskService) GetAll(userId int) ([]dashboard.Desk, error) {
+	return s.repo.GetAll(userId)
+}
 
-// func (s *DeskService) GetById(userId, listId int) (dashboard.Desk, error) {
-// 	return s.repo.GetById(userId, listId)
-// }
+func (s *DeskService) GetById(userId, deskId int) (dashboard.Desk, error) {
+	return s.repo.GetById(userId, deskId)
+}
 
 func (s *DeskService) Delete(userId, deskId int) error {
 	return s.repo.Delete(userId, deskId)

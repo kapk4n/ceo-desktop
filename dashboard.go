@@ -4,10 +4,10 @@ import "errors"
 
 type Desk struct {
 	Id          int    `json:"desk_id" db:"desk_id"`
-	Room_id     int    `json:"room_id" db:"room_id"`
 	Title       string `json:"title" db:"title" binding:"required"`
 	Description string `json:"description" db:"description"`
 	Changeable  string `json:"changeable" db:"changeable"`
+	StartDate   string `json:"start_date" db:"start_date"`
 }
 
 type Room struct {
@@ -37,6 +37,8 @@ type Task struct {
 	EmployeeId  int    `json:"employee_id" db:"employee_id"`
 	DeskId      int    `json:"desk_id" db:"desk_id"`
 	Status      string `json:"status" db:"status"`
+	AuthorId    int    `json:"author_id" db:"author_id"`
+	StartDate   string `json:"start_date" db:"start_date"`
 }
 
 type UpdateTaskInput struct {

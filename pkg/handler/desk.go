@@ -31,48 +31,48 @@ func (h *Handler) createList(c *gin.Context) {
 	})
 }
 
-// func (h *Handler) getAllList(c *gin.Context) {
-// 	userId, err := getUserId(c)
-// 	if err != nil {
-// 		return
-// 	}
+func (h *Handler) getAllList(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
-// 	type getAllListsResponse struct {
-// 		Data []dashboard.Desk `json:"data"`
-// 	}
+	type getAllListsResponse struct {
+		Data []dashboard.Desk `json:"data"`
+	}
 
-// 	lists, err := h.services.Desk.GetAll(userId)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	lists, err := h.services.Desk.GetAll(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-// 	c.JSON(http.StatusOK, getAllListsResponse{
-// 		Data: lists,
-// 	})
-// }
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
+}
 
-// func (h *Handler) getListById(c *gin.Context) {
-// 	userId, err := getUserId(c)
-// 	if err != nil {
-// 		return
-// 	}
+func (h *Handler) getListById(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
 
-// 	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusBadRequest, err.Error())
-// 		return
-// 	}
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
-// 	list, err := h.services.Desk.GetById(userId, id)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	list, err := h.services.Desk.GetById(userId, id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
-// 	c.JSON(http.StatusOK, list)
-// }
+	c.JSON(http.StatusOK, list)
+}
 
 func (h *Handler) updateDesk(c *gin.Context) {
 	userId, err := getUserId(c)

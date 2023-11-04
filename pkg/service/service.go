@@ -21,8 +21,8 @@ type Service struct {
 
 type Desk interface {
 	Create(userId int, list dashboard.Desk) (int, error)
-	// GetAll(userId int) ([]dashboard.Desk, error)
-	// GetById(userId, listId int) (dashboard.Desk, error)
+	GetAll(userId int) ([]dashboard.Desk, error)
+	GetById(userId, deskId int) (dashboard.Desk, error)
 	Delete(userId, deskId int) error
 	Update(userId, deskId int, input dashboard.UpdateDeskInput) error
 }
@@ -44,8 +44,8 @@ type Room interface {
 
 type Task interface {
 	Create(list dashboard.Task, authorId int) (int, error)
-	// GetAll(userId int) ([]dashboard.Desk, error)
-	// GetById(userId, listId int) (dashboard.Desk, error)
+	GetAll(taskId, deskId int) ([]dashboard.Task, error)
+	GetById(taskId, userId int) (dashboard.Task, error)
 	Delete(task_id, userId int) error
 	Update(ist dashboard.UpdateTaskInput, taskId, authorId int) error
 }
