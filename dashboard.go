@@ -1,12 +1,13 @@
 package dashboard
 
+import "errors"
+
 type Desk struct {
-	Id           int    `json:"desk_id" db:"desk_id"`
-	Room_id      int    `json:"room_id" db:"room_id"`
-	Task_Room_id int    `json:"task_room_id" db:"task_room_id"`
-	Title        string `json:"title" db:"title" binding:"required"`
-	Description  string `json:"description" db:"description"`
-	Changeable   string `json:"changeable" db:"changeable"`
+	Id          int    `json:"desk_id" db:"desk_id"`
+	Room_id     int    `json:"room_id" db:"room_id"`
+	Title       string `json:"title" db:"title" binding:"required"`
+	Description string `json:"description" db:"description"`
+	Changeable  string `json:"changeable" db:"changeable"`
 }
 
 type Room struct {
@@ -38,6 +39,27 @@ type UpdateTaskInput struct {
 	Status      *string `json:"status"`
 	Priority    *string `json:"priority" db:"priority"`
 }
+
+type UpdateDeskInput struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Changeable  *string `json:"changeable"`
+}
+
+func (i UpdateDeskInput) Validate() error {
+	if i.Title == nil && i.Description == nil {
+		return errors.New("update structure has no values")
+	}
+
+	return nil
+}
+
+// type Comment struct {
+// 	Title       *string `json:"title"`
+// 	Description *string `json:"description"`
+// 	Status      *string `json:"status"`
+// 	Priority    *string `json:"priority" db:"priority"`
+// }
 
 // type TodoItem struct {
 // 	Id          int    `json:"id" db:"id"`

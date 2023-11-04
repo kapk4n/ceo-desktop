@@ -20,3 +20,7 @@ func (s *TaskService) Create(list dashboard.Task, authorId int) (int, error) {
 func (s *TaskService) Update(list dashboard.UpdateTaskInput, taskId, authorId int) error {
 	return s.repo.Update(list, taskId, authorId)
 }
+
+func (s *TaskService) Delete(task_id, authorId int) error {
+	return s.repo.Delete(task_id, authorId)
+}

@@ -12,6 +12,7 @@ const (
 	roomTable     = "room"
 	taskRoomTable = "task_room"
 	taskTable     = "task"
+	commentTable  = "comment"
 
 	// todoItemsTable  = "todo_items"
 	// listsItemsTable = "lists_items"

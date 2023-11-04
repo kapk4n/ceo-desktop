@@ -124,8 +124,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			lists.POST("/room/", h.createRoom)
 			// lists.GET("/", h.getAllList)
 			// lists.GET("/:id", h.getListById)
-			// lists.PUT("/:id", h.updateList)
-			// lists.DELETE("/:id", h.deleteList)
+			lists.PUT("/:id", h.updateDesk)
+			lists.DELETE("/delete/:id", h.deleteDesk)
 		}
 		tasks := api.Group("/tasks")
 		{
@@ -133,7 +133,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			// lists.GET("/", h.getAllList)
 			// lists.GET("/:id", h.getListById)
 			tasks.PUT("/:id", h.updateTask)
-			// lists.DELETE("/:id", h.deleteList)
+			tasks.DELETE("/delete/:id", h.deleteTask)
 		}
 	}
 

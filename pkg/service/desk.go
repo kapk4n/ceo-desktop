@@ -25,13 +25,13 @@ func (s *DeskService) Create(userId int, list dashboard.Desk) (int, error) {
 // 	return s.repo.GetById(userId, listId)
 // }
 
-// func (s *DeskService) Delete(userId, listId int) error {
-// 	return s.repo.Delete(userId, listId)
-// }
+func (s *DeskService) Delete(userId, deskId int) error {
+	return s.repo.Delete(userId, deskId)
+}
 
-// func (s *TodoListService) Update(userId, listId int, input todo.UpdateListInput) error {
-// 	if err := input.Validate(); err != nil {
-// 		return err
-// 	}
-// 	return s.repo.Update(userId, listId, input)
-// }
+func (s *DeskService) Update(userId, deskId int, input dashboard.UpdateDeskInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	return s.repo.Update(userId, deskId, input)
+}

@@ -15,8 +15,8 @@ type Desk interface {
 	Create(userId int, list dashboard.Desk) (int, error)
 	// GetAll(userId int) ([]dashboard.Desk, error)
 	// GetById(userId, listId int) (dashboard.Desk, error)
-	// Delete(userId, listId int) error
-	// Update(userId, listId int, input todo.UpdateListInput) error
+	Delete(userId, deskId int) error
+	Update(userId, deskId int, input dashboard.UpdateDeskInput) error
 }
 
 type Room interface {
@@ -31,7 +31,7 @@ type Task interface {
 	Create(list dashboard.Task, authorId int) (int, error)
 	// GetAll(userId int) ([]dashboard.Desk, error)
 	// GetById(userId, listId int) (dashboard.Desk, error)
-	// Delete(userId, listId int) error
+	Delete(task_id, author_id int) error
 	Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
 }
 

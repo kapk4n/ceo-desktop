@@ -37,8 +37,8 @@ func (r *RoomPostgres) Create(list dashboard.RoomCreating, managerId int) (int, 
 
 	var id int
 	for i := 0; i < length; i++ {
-		createUsersRoomQuery := fmt.Sprintf(`INSERT INTO %s (user_id, manager_id, privacy) VALUES ($1, $2, '1') RETURNING room_id`, roomTable)
-		row := tx.QueryRow(createUsersRoomQuery, arr[i], managerId)
+		createUsersRoomQuery := fmt.Sprintf(`INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1',$3) RETURNING room_id`, roomTable)
+		row := tx.QueryRow(createUsersRoomQuery, arr[i], managerId, list.DeskId)
 		if err := row.Scan(&id); err != nil {
 			tx.Rollback()
 			return 0, err

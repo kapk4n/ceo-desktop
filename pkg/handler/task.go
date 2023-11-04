@@ -55,3 +55,24 @@ func (h *Handler) updateTask(c *gin.Context) {
 	// 	"id": id,
 	// })
 }
+
+func (h *Handler) deleteTask(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	taskId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid list id param")
+		return
+	}
+
+	err = h.services.Task.Delete(taskId, userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{"ok"})
+}

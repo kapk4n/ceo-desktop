@@ -3,6 +3,7 @@ package repository
 import (
 	"dashboard"
 	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -21,29 +22,52 @@ func (r *DeskPostgres) Create(userId int, list dashboard.Desk) (int, error) {
 		return 0, err
 	}
 
-	var id int
-	createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy) VALUES ($1, $2, '1') RETURNING room_id", roomTable)
-	row := tx.QueryRow(createUsersRoomQuery, userId, userId)
-	if err := row.Scan(&id); err != nil {
-		tx.Rollback()
-		return 0, err
-	}
-	room_id := id
-	// createTaskRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy) VALUES ($1, $2, '1')", taskRoomTable)
-	// _, err = tx.Exec(createTaskRoomQuery, userId, userId)
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return 0, err
-	// }
-
-	createListQuery := fmt.Sprintf("INSERT INTO %s (room_id, description, start_date, title, changeable) VALUES ($1, $2, CURRENT_DATE, $3, $4) RETURNING desk_id", deskTable)
-	row = tx.QueryRow(createListQuery, room_id, list.Description, list.Title, list.Changeable)
-	if err := row.Scan(&id); err != nil {
+	var deskId int
+	createListQuery := fmt.Sprintf("INSERT INTO %s (description, start_date, title, changeable) VALUES ($1, CURRENT_DATE, $2, $3) RETURNING desk_id", deskTable)
+	row := tx.QueryRow(createListQuery, list.Description, list.Title, list.Changeable)
+	if err := row.Scan(&deskId); err != nil {
 		tx.Rollback()
 		return 0, err
 	}
 
-	return id, tx.Commit()
+	var roomId int
+	createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1', $3) RETURNING room_id", roomTable)
+	row = tx.QueryRow(createUsersRoomQuery, userId, userId, deskId)
+	if err := row.Scan(&roomId); err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	return deskId, tx.Commit()
+}
+
+func (r *DeskPostgres) Delete(userId, deskId int) error {
+	query := fmt.Sprintf("delete from %s where task_id in (select task_id  from %s where desk_id = $1)",
+		commentTable, taskTable)
+	_, err := r.db.Exec(query, deskId)
+	if err != nil {
+		return err
+	}
+
+	query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1",
+		roomTable)
+	_, err = r.db.Exec(query, deskId)
+	if err != nil {
+		return err
+	}
+
+	query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1",
+		taskTable)
+	_, err = r.db.Exec(query, deskId)
+	if err != nil {
+		return err
+	}
+
+	query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1",
+		deskTable)
+	_, err = r.db.Exec(query, deskId)
+
+	return err
 }
 
 // func (r *DeskPostgres) GetAll(userId int) ([]dashboard.Desk, error) {
@@ -64,43 +88,34 @@ func (r *DeskPostgres) Create(userId int, list dashboard.Desk) (int, error) {
 // 	return list, err
 // }
 
-// func (r *DeskPostgres) Delete(userId, listId int) error {
-// 	query := fmt.Sprintf("DELETE FROM %s tl USING %s ul WHERE tl.id = ul.list_id AND ul.user_id=$1 AND ul.list_id=$2",
-// 		deskTable, roomTable)
-// 	_, err := r.db.Exec(query, userId, listId)
+func (r *DeskPostgres) Update(userId, deskId int, input dashboard.UpdateDeskInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
 
-// 	return err
-// }
+	if input.Title != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		args = append(args, *input.Title)
+		argId++
+	}
 
-// func (r *TodoListPostgres) Update(userId, listId int, input dashboard.UpdateListInput) error {
-// 	setValues := make([]string, 0)
-// 	args := make([]interface{}, 0)
-// 	argId := 1
+	if input.Description != nil {
+		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
+		args = append(args, *input.Description)
+		argId++
+	}
 
-// 	if input.Title != nil {
-// 		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
-// 		args = append(args, *input.Title)
-// 		argId++
-// 	}
+	if input.Changeable != nil {
+		setValues = append(setValues, fmt.Sprintf("changeable=$%d", argId))
+		args = append(args, *input.Changeable)
+		argId++
+	}
 
-// 	if input.Description != nil {
-// 		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
-// 		args = append(args, *input.Description)
-// 		argId++
-// 	}
+	setQuery := strings.Join(setValues, ", ")
 
-// 	// title=$1
-// 	// description=$1
-// 	// title=$1, description=$2
-// 	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf(`update %s set %s where desk_id = %d`, deskTable, setQuery, deskId)
+	args = append(args)
 
-// 	query := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul WHERE tl.id = ul.list_id AND ul.list_id=$%d AND ul.user_id=$%d",
-// 		deskTable, setQuery, roomTable, argId, argId+1)
-// 	args = append(args, listId, userId)
-
-// 	logrus.Debugf("updateQuery: %s", query)
-// 	logrus.Debugf("args: %s", args)
-
-// 	_, err := r.db.Exec(query, args...)
-// 	return err
-// }
+	_, err := r.db.Exec(query, args...)
+	return err
+}
