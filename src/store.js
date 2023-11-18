@@ -1,20 +1,21 @@
+import axios from 'axios'
 import {observable, action, makeObservable, autorun, computed} from 'mobx'
+
+
 
 class TodoStore {
   tasks = []
   
   desks = []
   ext_desk = []
-
-
-
+  // token = ''
 
   desks_3 = fetch(`http://localhost:8001/api/lists/`, {
     method: "GET",
     headers: {
       "origin": "http://localhost:8001/",
       "access-control-allow-origin":"http://localhost:8001/",
-      "Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTk1OTUzNTcsImlhdCI6MTY5OTU1MjE1NywidXNlcl9pZCI6MX0.ejzy51eBZ-VYoxPYroANUfi53M4GzZhwgeF1rS6vfNA",
+      "Authorization":`Bearer ${sessionStorage.getItem("token")}`,
     },
   })
   .then(res => res.json())
@@ -30,14 +31,23 @@ class TodoStore {
 
   constructor () {
     makeObservable(this, {
+      // token:observable,
       tasks:observable,
       desks:observable,
       setTasks:action,
+      // setToken:action,
       setDesks:action,
       addTask:action,
       addDesk:action
     })
+    // this.select()
+    
   }
+
+  // select() {
+  //   var desks_3 = []
+
+  // }
 
   setTasks (tasks) {
     this.tasks = tasks
@@ -49,10 +59,16 @@ class TodoStore {
     // console.log(desks[0])
     // console.log(this.desks)
   }
+  // setToken (token) {
+  //   this.token = token
+  //   this.select
+  //   // console.log(typeof(desks)[0])
+  //   // console.log(desks[0])
+  //   console.log(this.token)
+  // }
 
 
-
-
+  // addToken = (token) => this.setToken([...this.token, token]);
   addTask = (taskName) => this.setTasks([...this.tasks, taskName]);
   addDesk = (deskName) => this.setDesks([...this.desks, deskName]);
 
