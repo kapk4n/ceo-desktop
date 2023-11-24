@@ -8,7 +8,6 @@ function CardProfile(User) {
       <Card.Header as="h5">{User['login']}</Card.Header>
       <Card.Body>
         <Card.Title>Email: {User['email']}</Card.Title>
-        {console.log(User)}
         <Card.Text>
           {User['status']}
         </Card.Text>

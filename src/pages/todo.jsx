@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { useState } from "react";
-import { store } from '../store';
+// import { store } from '../store';
 
 import { observer } from 'mobx-react-lite';
 
@@ -13,11 +13,11 @@ export const TodoList = observer(() => {
   return (
     <div>
       
-      {
+      {/* {
         store.tasks.map((task, i) => <div key={i}>{task}</div>)
       }
       <input value={currentInputValue} onChange={(e) => setCurrentInputValue(e.target.value)}/>
-      <button onClick={()=>store.addTask(currentInputValue)}>Добавить</button>
+      <button onClick={()=>store.addTask(currentInputValue)}>Добавить</button> */}
 
       </div>
   )

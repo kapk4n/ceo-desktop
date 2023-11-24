@@ -8,7 +8,6 @@ import {useParams} from "react-router-dom";
 
 function CardTask(title) {
   let { id } = useParams();
-  console.log(id)
   const deleteTask = async (e) => {
   
     // console.log(title)

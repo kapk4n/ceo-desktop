@@ -51,8 +51,8 @@ const App = observer(() => {
       <Router>
             <Routes>
                 <Route path='/' exect element={<ToDoList />} />
-                <Route path='/sign_in' element={<LoginForm />} />
-                <Route path='/sign_up' element={<SignForm />} />
+                {/* <Route path='/sign_in' element={<LoginForm />} />
+                <Route path='/sign_up' element={<SignForm />} /> */}
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/desks' element={<DesksList />} />
                 <Route path="/desks/:id" element={<DesksId />} />

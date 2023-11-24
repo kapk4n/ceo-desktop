@@ -16,7 +16,7 @@ const DesksList = observer(() => {
     <div>
       <CreatingDesk />
    {Array(desks.length).fill(true).map((_, i) => <WithHeaderStyledExample key={i} {...desks[i]}/>)} 
-      {store.desks}
+      {/* {store.desks} */}
     </div>
   )
 });
