@@ -24,9 +24,25 @@ func (r *TaskPostgres) Create(list dashboard.Task, authorId int) (int, error) {
 
 	var task_id int
 
+	query := fmt.Sprintf(`select "user_id" from "%s" where login = $1`,
+		usersTable)
+	err = r.db.Get(&list.EmployeeId, query, list.EmployeeLogin)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Print(list.EmployeeId, list.EmployeeLogin)
+
 	createTaskQuery := fmt.Sprintf(`INSERT INTO %s (start_date, title, description, priority, employee_id, author_id, status, desk_id) VALUES (CURRENT_DATE, $1, $2, $3, $4, $5, 'To Do', $6) RETURNING task_id`, taskTable)
 	row := tx.QueryRow(createTaskQuery, list.Title, list.Description, list.Priority, list.EmployeeId, authorId, list.DeskId)
 	if err := row.Scan(&task_id); err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+
+	var roomId int
+	createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1', $3) RETURNING room_id", roomTable)
+	row = tx.QueryRow(createUsersRoomQuery, list.EmployeeId, authorId, list.DeskId)
+	if err := row.Scan(&roomId); err != nil {
 		tx.Rollback()
 		return 0, err
 	}
@@ -40,27 +56,40 @@ func (r *TaskPostgres) Update(list dashboard.UpdateTaskInput, taskId, authorId i
 	args := make([]interface{}, 0)
 	argId := 1
 
-	if list.Title != nil {
+	if list.Title != nil && *list.Title != `` {
 		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
 		args = append(args, *list.Title)
 		argId++
 	}
 
-	if list.Description != nil {
+	if list.Description != nil && *list.Description != `` {
 		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
 		args = append(args, *list.Description)
 		argId++
 	}
 
-	if list.Status != nil {
+	if list.Status != nil && *list.Status != `` {
 		setValues = append(setValues, fmt.Sprintf("status=$%d", argId))
 		args = append(args, *list.Status)
 		argId++
 	}
 
-	if list.Priority != nil {
+	if list.Priority != nil && *list.Priority != `` {
 		setValues = append(setValues, fmt.Sprintf("priority=$%d", argId))
 		args = append(args, *list.Priority)
+		argId++
+	}
+
+	if list.EmployeeLogin != nil && *list.EmployeeLogin != `` {
+		query := fmt.Sprintf(`select "user_id" from "%s" where login = $1`,
+			usersTable)
+		err := r.db.Get(&list.EmployeeId, query, list.EmployeeLogin)
+		if err != nil {
+			fmt.Print(list.EmployeeId, list.EmployeeLogin)
+		}
+
+		setValues = append(setValues, fmt.Sprintf("employee_id=$%d", argId))
+		args = append(args, *list.EmployeeId)
 		argId++
 	}
 
@@ -69,8 +98,12 @@ func (r *TaskPostgres) Update(list dashboard.UpdateTaskInput, taskId, authorId i
 	query := fmt.Sprintf(`update %s set %s where task_id = %d`, taskTable, setQuery, taskId)
 	args = append(args)
 
+	// createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1', $3) RETURNING room_id", roomTable)
+	// row := tx.QueryRow(createUsersRoomQuery, userId, userId, deskId)
+
 	_, err := r.db.Exec(query, args...)
 	return err
+	// , tx.Commit()
 }
 
 func (r *TaskPostgres) Delete(task_id, authorId int) error {
@@ -97,20 +130,25 @@ func (r *TaskPostgres) Delete(task_id, authorId int) error {
 	}
 }
 
-func (r *TaskPostgres) GetAll(task_id, authorId int) ([]dashboard.Task, error) {
-	var list []dashboard.Task
-	query := fmt.Sprintf("select * from %s where desk_id = $1",
-		taskTable)
-	err := r.db.Select(&list, query, authorId)
+func (r *TaskPostgres) GetAll(task_id, deskId int) ([]dashboard.TaskJoins, error) {
+	var list []dashboard.TaskJoins
+	query := fmt.Sprintf(`select task_id, desk_id, start_date, title, description, priority, employee_id, author_id, t.status, 
+	u.login employee_login, u.email employee_email, u.phone employee_phone, 
+	u2.login author_login, u2.email author_email, u2.phone author_phone
+	from "%s" t inner join "%s" u on t.employee_id = u."user_id"
+	inner join "%s" u2 on t.author_id  = u2."user_id"
+	where desk_id = $1 order by priority`,
+		taskTable, usersTable, usersTable)
+	err := r.db.Select(&list, query, deskId)
 
 	return list, err
 }
 
-func (r *TaskPostgres) GetById(task_id, authorId int) (dashboard.Task, error) {
-	var list dashboard.Task
-	query := fmt.Sprintf("select * from %s where task_id = $1",
+func (r *TaskPostgres) GetById(authorId, desk_id int) ([]dashboard.Task, error) {
+	var list []dashboard.Task
+	query := fmt.Sprintf("select * from %s where desk_id = $1 and employee_id = $2",
 		taskTable)
-	err := r.db.Get(&list, query, authorId)
+	err := r.db.Select(&list, query, desk_id, authorId)
 
 	return list, err
 }

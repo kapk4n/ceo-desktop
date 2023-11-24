@@ -25,10 +25,10 @@ func (s *TaskService) Delete(task_id, authorId int) error {
 	return s.repo.Delete(task_id, authorId)
 }
 
-func (s *TaskService) GetAll(task_id, deskId int) ([]dashboard.Task, error) {
+func (s *TaskService) GetAll(task_id, deskId int) ([]dashboard.TaskJoins, error) {
 	return s.repo.GetAll(task_id, deskId)
 }
 
-func (s *TaskService) GetById(task_id, authorId int) (dashboard.Task, error) {
+func (s *TaskService) GetById(task_id, authorId int) ([]dashboard.Task, error) {
 	return s.repo.GetById(task_id, authorId)
 }

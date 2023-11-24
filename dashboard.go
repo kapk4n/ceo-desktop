@@ -30,22 +30,43 @@ type RoomCreating struct {
 }
 
 type Task struct {
-	TaskId      int    `json:"task_id" db:"task_id"`
-	Title       string `json:"title" db:"title"`
-	Description string `json:"description" db:"description"`
-	Priority    string `json:"priority" db:"priority"`
-	EmployeeId  int    `json:"employee_id" db:"employee_id"`
-	DeskId      int    `json:"desk_id" db:"desk_id"`
-	Status      string `json:"status" db:"status"`
-	AuthorId    int    `json:"author_id" db:"author_id"`
-	StartDate   string `json:"start_date" db:"start_date"`
+	TaskId        int    `json:"task_id" db:"task_id"`
+	Title         string `json:"title" db:"title"`
+	Description   string `json:"description" db:"description"`
+	Priority      string `json:"priority" db:"priority"`
+	EmployeeId    int    `json:"employee_id" db:"employee_id"`
+	EmployeeLogin string `json:"login" db:"login"`
+	DeskId        int    `json:"desk_id" db:"desk_id"`
+	Status        string `json:"status" db:"status"`
+	AuthorId      int    `json:"author_id" db:"author_id"`
+	StartDate     string `json:"start_date" db:"start_date"`
+}
+
+type TaskJoins struct {
+	TaskId        int    `json:"task_id" db:"task_id"`
+	Title         string `json:"title" db:"title"`
+	Description   string `json:"description" db:"description"`
+	Priority      string `json:"priority" db:"priority"`
+	EmployeeId    int    `json:"employee_id" db:"employee_id"`
+	DeskId        int    `json:"desk_id" db:"desk_id"`
+	AuthorId      int    `json:"author_id" db:"author_id"`
+	StartDate     string `json:"start_date" db:"start_date"`
+	Status        string `json:"status" db:"status"`
+	EmployeeLogin string `json:"employee_login" db:"employee_login"`
+	EmployeeEmail string `json:"employee_email" db:"employee_email"`
+	EmployeePhone string `json:"employee_phone" db:"employee_phone"`
+	AuthorLogin   string `json:"author_login" db:"author_login"`
+	AuthorEmail   string `json:"author_email" db:"author_email"`
+	AuthorPhone   string `json:"author_phone" db:"author_phone"`
 }
 
 type UpdateTaskInput struct {
-	Title       *string `json:"title"`
-	Description *string `json:"description"`
-	Status      *string `json:"status"`
-	Priority    *string `json:"priority" db:"priority"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Status        *string `json:"status"`
+	Priority      *string `json:"priority" db:"priority"`
+	EmployeeId    *int    `json:"employee_id" db:"employee_id"`
+	EmployeeLogin *string `json:"login" db:"login"`
 }
 
 type UpdateDeskInput struct {

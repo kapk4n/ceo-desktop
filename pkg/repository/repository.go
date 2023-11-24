@@ -27,10 +27,14 @@ type Room interface {
 	// Update(userId, listId int, input todo.UpdateListInput) error
 }
 
+type Profile interface {
+	GetProfile(userId int) ([]dashboard.User, error)
+}
+
 type Task interface {
 	Create(list dashboard.Task, authorId int) (int, error)
-	GetAll(userId, deskId int) ([]dashboard.Task, error)
-	GetById(userId, task_id int) (dashboard.Task, error)
+	GetAll(userId, deskId int) ([]dashboard.TaskJoins, error)
+	GetById(userId, task_id int) ([]dashboard.Task, error)
 	Delete(task_id, author_id int) error
 	Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
 }
@@ -122,6 +126,7 @@ type Repository struct {
 	Room
 	Task
 	Comment
+	Profile
 	//TodoItem
 }
 
@@ -139,6 +144,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Desk:          NewDeskPostgeres(db),
 		Task:          NewTaskPostgres(db),
 		Comment:       NewCommentPostgres(db),
+		Profile:       NewProfilePostgres(db),
 		//TodoItem:      NewTodoItemPostgres(db),
 	}
 }

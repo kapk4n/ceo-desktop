@@ -1,8 +1,8 @@
 create table public.user (
 	user_id serial4 NOT null primary key,
-	login varchar(64) not null,
+	login varchar(64) not null UNIQUE,
 	password varchar(255) not null,
-	email varchar(64) not null,
+	email varchar(64) not null UNIQUE,
 	phone varchar(64) not null,
 	status varchar(30) not null
 	

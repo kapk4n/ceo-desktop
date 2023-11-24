@@ -17,6 +17,7 @@ type Service struct {
 	Room
 	Comment
 	Task
+	Profile
 }
 
 type Desk interface {
@@ -42,10 +43,18 @@ type Room interface {
 	// Update(userId, listId int, input todo.UpdateListInput) error
 }
 
+type Profile interface {
+	GetProfile(userId int) ([]dashboard.User, error)
+	// GetAll(userId int) ([]dashboard.Desk, error)
+	// GetById(userId, listId int) (dashboard.Desk, error)
+	// Delete(userId, listId int) error
+	// Update(userId, listId int, input todo.UpdateListInput) error
+}
+
 type Task interface {
 	Create(list dashboard.Task, authorId int) (int, error)
-	GetAll(taskId, deskId int) ([]dashboard.Task, error)
-	GetById(taskId, userId int) (dashboard.Task, error)
+	GetAll(taskId, deskId int) ([]dashboard.TaskJoins, error)
+	GetById(taskId, userId int) ([]dashboard.Task, error)
 	Delete(task_id, userId int) error
 	Update(ist dashboard.UpdateTaskInput, taskId, authorId int) error
 }
@@ -65,6 +74,7 @@ func NewService(repos *repository.Repository) *Service {
 		Room:          NewRoomService(repos.Room),
 		Task:          NewTaskService(repos.Task),
 		Comment:       NewCommentService(repos.Comment),
+		Profile:       NewProfileService(repos.Profile),
 		// //TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 	}
 }

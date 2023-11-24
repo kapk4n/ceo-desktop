@@ -82,18 +82,13 @@ func (h *Handler) getAllTask(c *gin.Context) {
 	if err != nil {
 		return
 	}
-
-	var input dashboard.Task
-	if err := c.BindJSON(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
+	DeskId, _ := strconv.Atoi(c.Param("id"))
 
 	type getAllListsResponse struct {
-		Data []dashboard.Task `json:"data"`
+		Data []dashboard.TaskJoins `json:"data"`
 	}
 
-	lists, err := h.services.Task.GetAll(userId, input.DeskId)
+	lists, err := h.services.Task.GetAll(userId, DeskId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -109,19 +104,19 @@ func (h *Handler) getTaskById(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	DeskId, _ := strconv.Atoi(c.Param("id"))
 
-	id, err := strconv.Atoi(c.Param("id"))
-
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
+	type getAllListsResponse struct {
+		Data []dashboard.Task `json:"data"`
 	}
 
-	list, err := h.services.Task.GetById(userId, id)
+	lists, err := h.services.Task.GetById(userId, DeskId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
 }

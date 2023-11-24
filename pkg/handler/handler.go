@@ -19,8 +19,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.Use(func() gin.HandlerFunc {
 		return func(c *gin.Context) {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
 			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
 			if c.Request.Method == "OPTIONS" {
 				c.AbortWithStatus(204)
 				return
@@ -130,8 +133,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		tasks := api.Group("/tasks")
 		{
 			tasks.POST("/", h.createTask)
-			tasks.GET("/", h.getAllTask)
-			tasks.GET("/:id", h.getTaskById)
+			tasks.GET("/all/:id", h.getAllTask)
+			tasks.GET("byid/:id", h.getTaskById)
 			tasks.PUT("/:id", h.updateTask)
 			tasks.DELETE("/delete/:id", h.deleteTask)
 		}
@@ -142,6 +145,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			// lists.GET("/:id", h.getListById)
 			// comment.PUT("/:id", h.updateComment)
 			comment.DELETE("/delete/:id", h.deleteComment)
+		}
+		profile := api.Group("/profile")
+		{
+			profile.GET("/", h.GetProfile)
 		}
 	}
 
