@@ -37,7 +37,11 @@ type Comment interface {
 
 type Room interface {
 	Create(list dashboard.RoomCreating, managerId int) (int, error)
-	// GetAll(userId int) ([]dashboard.Desk, error)
+	GetAll(userId int) ([]dashboard.RoomGetting, error)
+	GetLogins(userId int) ([]dashboard.RoomGetting, error)
+	NewUser(list_Room dashboard.RoomGetting, deskId int) error
+	GetAllUsers() ([]string, error)
+	Delete(deskId int, user string, user_id int) error
 	// GetById(userId, listId int) (dashboard.Desk, error)
 	// Delete(userId, listId int) error
 	// Update(userId, listId int, input todo.UpdateListInput) error
@@ -56,7 +60,11 @@ type Task interface {
 	GetAll(taskId, deskId int) ([]dashboard.TaskJoins, error)
 	GetById(taskId, userId int) ([]dashboard.Task, error)
 	Delete(task_id, userId int) error
-	Update(ist dashboard.UpdateTaskInput, taskId, authorId int) error
+	Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
+
+	GetTasksToDo(taskId, deskId int) ([]dashboard.TaskJoins, error)
+	GetTasksInWork(taskId, deskId int) ([]dashboard.TaskJoins, error)
+	GetTasksDone(taskId, deskId int) ([]dashboard.TaskJoins, error)
 }
 
 func NewService(repos *repository.Repository) *Service {

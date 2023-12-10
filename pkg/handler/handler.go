@@ -135,7 +135,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			tasks.POST("/", h.createTask)
 			tasks.GET("/all/:id", h.getAllTask)
 			tasks.GET("byid/:id", h.getTaskById)
-			tasks.PUT("/:id", h.updateTask)
+
+			tasks.GET("/all/:id/todo", h.getTasksToDo)
+			tasks.GET("/all/:id/inwork", h.getTasksInWork)
+			tasks.GET("/all/:id/done", h.getTasksDone)
+
+			tasks.POST("/:id", h.updateTask)
 			tasks.DELETE("/delete/:id", h.deleteTask)
 		}
 		comment := api.Group("/comment")
@@ -149,6 +154,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		profile := api.Group("/profile")
 		{
 			profile.GET("/", h.GetProfile)
+		}
+		room := api.Group("/room")
+		{
+			room.GET("/:id", h.getRoom)
+			room.GET("/logins/:id", h.getLogins)
+			room.POST("/newuser/:id", h.newUser)
+			room.GET("/all", h.getAll)
+			room.DELETE("/delete/:id", h.deleteUser)
 		}
 	}
 

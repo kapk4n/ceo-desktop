@@ -70,3 +70,100 @@ func (r *RoomPostgres) Create(list dashboard.RoomCreating, managerId int) (int, 
 
 	return id, tx.Commit()
 }
+
+func (r *RoomPostgres) GetAll(deskId int) ([]dashboard.RoomGetting, error) {
+	var list []dashboard.RoomGetting
+	query := fmt.Sprintf(`select room_id, r."user_id", manager_id, login
+	from "%s" r 
+	inner join "%s" u 
+	on u."user_id" = r."user_id"
+	where r."desk_id" = $1`,
+		roomTable, usersTable)
+	err := r.db.Select(&list, query, deskId)
+
+	return list, err
+}
+
+func (r *RoomPostgres) GetLogins(deskId int) ([]dashboard.RoomGetting, error) {
+	var list []dashboard.RoomGetting
+	query := fmt.Sprintf(`select distinct login
+	from "%s" r 
+	inner join "%s" u 
+	on u."user_id" = r."user_id"
+	where r."desk_id" = $1`,
+		roomTable, usersTable)
+	err := r.db.Select(&list, query, deskId)
+
+	return list, err
+}
+
+func (r *RoomPostgres) NewUser(list_Room dashboard.RoomGetting, deskId int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	var list []int
+	query := fmt.Sprintf(`select user_id
+	from "%s" r 
+	where r."desk_id" = $1`,
+		roomTable)
+	err = r.db.Select(&list, query, deskId)
+
+	var manager_ids []int
+	query = fmt.Sprintf(`select manager_id
+	from "%s" r 
+	where r."desk_id" = $1`,
+		roomTable)
+	err = r.db.Select(&manager_ids, query, deskId)
+
+	var user_login = list_Room.UserLogin
+	var user int
+	query = fmt.Sprintf(`select user_id
+	from "%s" r 
+	where r."login" = $1`, usersTable)
+	err = r.db.Get(&user, query, user_login)
+
+	var id int
+	if !slices.Contains(list, user) {
+		createUsersRoomQuery := fmt.Sprintf(`INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1',$3) RETURNING room_id`, roomTable)
+		row := tx.QueryRow(createUsersRoomQuery, user, manager_ids[0], deskId)
+		if err := row.Scan(&id); err != nil {
+			tx.Rollback()
+			return err
+		}
+		return tx.Commit()
+	}
+
+	return err
+}
+
+func (r *RoomPostgres) GetAllUsers() ([]string, error) {
+	var list []string
+	query := fmt.Sprintf(`select login from "%s"`,
+		usersTable)
+	err := r.db.Select(&list, query)
+
+	return list, err
+}
+
+func (r *RoomPostgres) Delete(desk_id int, user string, user_id int) error {
+
+	var list dashboard.User
+	query := fmt.Sprintf(`select user_id from "%s" where login = $1`,
+		usersTable)
+	err := r.db.Select(&list, query, user)
+
+	var task []dashboard.Task
+	query = fmt.Sprintf(`select * from "%s" where employee_id = $1`,
+		taskTable)
+	err = r.db.Select(&task, query, list.Id)
+
+	if task == nil {
+		// query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1 and user_id = $2 and manager_id = $3",
+		// 	roomTable)
+		// _, err = r.db.Exec(query, desk_id, list.Id, user_id)
+		fmt.Println("EMPTY")
+	}
+	return err
+}

@@ -18,6 +18,13 @@ type Room struct {
 	Privacy   string
 }
 
+type RoomGetting struct {
+	Id        int    `json:"room_id" db:"room_id"`
+	UserId    int    `json:"user_id" db:"user_id"`
+	UserLogin string `json:"login" db:"login"`
+	ManagerId int    `json:"manager_id" db:"manager_id"`
+}
+
 type Comment struct {
 	Id       int    `json:"comment_id" db:"comment_id"`
 	TaskId   int    `json:"task_id" db:"task_id"`

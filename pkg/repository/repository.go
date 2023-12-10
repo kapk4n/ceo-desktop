@@ -21,7 +21,11 @@ type Desk interface {
 
 type Room interface {
 	Create(list dashboard.RoomCreating, managerId int) (int, error)
-	// GetAll(userId int) ([]dashboard.Desk, error)
+	GetAll(deskId int) ([]dashboard.RoomGetting, error)
+	GetLogins(deskId int) ([]dashboard.RoomGetting, error)
+	NewUser(list_Room dashboard.RoomGetting, deskId int) error
+	GetAllUsers() ([]string, error)
+	Delete(deskId int, user string, user_id int) error
 	// GetById(userId, listId int) (dashboard.Desk, error)
 	// Delete(userId, listId int) error
 	// Update(userId, listId int, input todo.UpdateListInput) error
@@ -37,6 +41,10 @@ type Task interface {
 	GetById(userId, task_id int) ([]dashboard.Task, error)
 	Delete(task_id, author_id int) error
 	Update(list dashboard.UpdateTaskInput, taskId, authorId int) error
+
+	GetTasksToDo(taskId, deskId int) ([]dashboard.TaskJoins, error)
+	GetTasksInWork(taskId, deskId int) ([]dashboard.TaskJoins, error)
+	GetTasksDone(taskId, deskId int) ([]dashboard.TaskJoins, error)
 }
 
 type Comment interface {

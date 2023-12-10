@@ -38,7 +38,6 @@ func (h *Handler) updateTask(c *gin.Context) {
 	}
 
 	task_id, err := strconv.Atoi(c.Param("id"))
-
 	var input dashboard.UpdateTaskInput
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -111,6 +110,72 @@ func (h *Handler) getTaskById(c *gin.Context) {
 	}
 
 	lists, err := h.services.Task.GetById(userId, DeskId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
+}
+
+func (h *Handler) getTasksToDo(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+	DeskId, _ := strconv.Atoi(c.Param("id"))
+
+	type getAllListsResponse struct {
+		Data []dashboard.TaskJoins `json:"data"`
+	}
+
+	lists, err := h.services.Task.GetTasksToDo(userId, DeskId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
+}
+
+func (h *Handler) getTasksInWork(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+	DeskId, _ := strconv.Atoi(c.Param("id"))
+
+	type getAllListsResponse struct {
+		Data []dashboard.TaskJoins `json:"data"`
+	}
+
+	lists, err := h.services.Task.GetTasksInWork(userId, DeskId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllListsResponse{
+		Data: lists,
+	})
+}
+
+func (h *Handler) getTasksDone(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+	DeskId, _ := strconv.Atoi(c.Param("id"))
+
+	type getAllListsResponse struct {
+		Data []dashboard.TaskJoins `json:"data"`
+	}
+
+	lists, err := h.services.Task.GetTasksDone(userId, DeskId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

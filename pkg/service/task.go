@@ -32,3 +32,15 @@ func (s *TaskService) GetAll(task_id, deskId int) ([]dashboard.TaskJoins, error)
 func (s *TaskService) GetById(task_id, authorId int) ([]dashboard.Task, error) {
 	return s.repo.GetById(task_id, authorId)
 }
+
+func (s *TaskService) GetTasksToDo(task_id, deskId int) ([]dashboard.TaskJoins, error) {
+	return s.repo.GetTasksToDo(task_id, deskId)
+}
+
+func (s *TaskService) GetTasksInWork(task_id, deskId int) ([]dashboard.TaskJoins, error) {
+	return s.repo.GetTasksInWork(task_id, deskId)
+}
+
+func (s *TaskService) GetTasksDone(task_id, deskId int) ([]dashboard.TaskJoins, error) {
+	return s.repo.GetTasksDone(task_id, deskId)
+}
