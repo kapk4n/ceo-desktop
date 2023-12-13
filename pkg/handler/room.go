@@ -135,14 +135,17 @@ func (h *Handler) deleteUser(c *gin.Context) {
 	}
 
 	type UserLogin struct {
-		Login string `json 'login'`
+		Login string `json:"login"`
 	}
 
 	var input UserLogin
 	if err := c.BindJSON(&input); err != nil {
+		fmt.Println(input)
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		fmt.Println("fasmfla")
 		return
 	}
+	fmt.Println("fasmfla")
 
 	deskId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

@@ -152,18 +152,19 @@ func (r *RoomPostgres) Delete(desk_id int, user string, user_id int) error {
 	var list dashboard.User
 	query := fmt.Sprintf(`select user_id from "%s" where login = $1`,
 		usersTable)
-	err := r.db.Select(&list, query, user)
+	err := r.db.Get(&list, query, user)
 
 	var task []dashboard.Task
-	query = fmt.Sprintf(`select * from "%s" where employee_id = $1`,
+	query = fmt.Sprintf(`select * from "%s" where (employee_id = $1 or author_id = $1) and desk_id = $2`,
 		taskTable)
-	err = r.db.Select(&task, query, list.Id)
+	err = r.db.Select(&task, query, list.Id, desk_id)
 
-	if task == nil {
-		// query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1 and user_id = $2 and manager_id = $3",
-		// 	roomTable)
-		// _, err = r.db.Exec(query, desk_id, list.Id, user_id)
-		fmt.Println("EMPTY")
+	fmt.Println("fasmfla")
+	if len(task) == 0 {
+		query = fmt.Sprintf("DELETE FROM %s WHERE desk_id = $1 and user_id = $2 and manager_id = $3",
+			roomTable)
+		_, err = r.db.Exec(query, desk_id, list.Id, user_id)
+		fmt.Println(desk_id, list.Id, user_id)
 	}
 	return err
 }

@@ -12,6 +12,56 @@ type TaskPostgres struct {
 	db *sqlx.DB
 }
 
+// type Priority int
+
+// const (
+// 	Low      Priority = iota + 1 // EnumIndex = 1
+// 	Medium                       // EnumIndex = 2
+// 	High                         // EnumIndex = 3
+// 	VeryHigh                     // EnumIndex = 4
+// )
+
+// func (d Priority) String() string {
+// 	return [...]string{"Low", "Medium", "High", "Very high"}[d-1]
+// }
+
+// // EnumIndex - Creating common behavior - give the type a EnumIndex functio
+// func (d Priority) EnumIndex() int {
+// 	return int(d)
+// }
+
+func enumIdent(data string) int {
+	if data == "Low" {
+		return 0
+	}
+	if data == "Medium" {
+		return 1
+	}
+	if data == "High" {
+		return 2
+	}
+	if data == "Very high" {
+		return 3
+	}
+	return 1000
+}
+
+func enumUndent(data int) string {
+	if data == 0 {
+		return "Low"
+	}
+	if data == 1 {
+		return "Medium"
+	}
+	if data == 2 {
+		return "High"
+	}
+	if data == 3 {
+		return "Very high"
+	}
+	return ""
+}
+
 func NewTaskPostgres(db *sqlx.DB) *TaskPostgres {
 	return &TaskPostgres{db: db}
 }
@@ -32,6 +82,7 @@ func (r *TaskPostgres) Create(list dashboard.Task, authorId int) (int, error) {
 	}
 	fmt.Print(list.EmployeeId, list.EmployeeLogin)
 
+	list.Priority = enumIdent(list.PriorityString)
 	createTaskQuery := fmt.Sprintf(`INSERT INTO %s (start_date, title, description, priority, employee_id, author_id, status, desk_id) VALUES (CURRENT_DATE, $1, $2, $3, $4, $5, 'To Do', $6) RETURNING task_id`, taskTable)
 	row := tx.QueryRow(createTaskQuery, list.Title, list.Description, list.Priority, list.EmployeeId, authorId, list.DeskId)
 	if err := row.Scan(&task_id); err != nil {
@@ -39,13 +90,13 @@ func (r *TaskPostgres) Create(list dashboard.Task, authorId int) (int, error) {
 		return 0, err
 	}
 
-	var roomId int
-	createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1', $3) RETURNING room_id", roomTable)
-	row = tx.QueryRow(createUsersRoomQuery, list.EmployeeId, authorId, list.DeskId)
-	if err := row.Scan(&roomId); err != nil {
-		tx.Rollback()
-		return 0, err
-	}
+	// var roomId int
+	// createUsersRoomQuery := fmt.Sprintf("INSERT INTO %s (user_id, manager_id, privacy, desk_id) VALUES ($1, $2, '1', $3) RETURNING room_id", roomTable)
+	// row = tx.QueryRow(createUsersRoomQuery, list.EmployeeId, authorId, list.DeskId)
+	// if err := row.Scan(&roomId); err != nil {
+	// 	tx.Rollback()
+	// 	return 0, err
+	// }
 
 	return task_id, tx.Commit()
 }
@@ -73,9 +124,9 @@ func (r *TaskPostgres) Update(list dashboard.UpdateTaskInput, taskId, authorId i
 		argId++
 	}
 
-	if list.Priority != nil && *list.Priority != `` {
+	if list.PriorityString != nil && *list.PriorityString != `` {
 		setValues = append(setValues, fmt.Sprintf("priority=$%d", argId))
-		args = append(args, *list.Priority)
+		args = append(args, enumIdent(*list.PriorityString))
 		argId++
 	}
 
@@ -177,9 +228,13 @@ func (r *TaskPostgres) GetAll(task_id, deskId int) ([]dashboard.TaskJoins, error
 	u2.login author_login, u2.email author_email, u2.phone author_phone
 	from "%s" t inner join "%s" u on t.employee_id = u."user_id"
 	inner join "%s" u2 on t.author_id  = u2."user_id"
-	where desk_id = $1 order by priority`,
+	where desk_id = $1 order by priority desc, status`,
 		taskTable, usersTable, usersTable)
 	err := r.db.Select(&list, query, deskId)
+
+	for i := 0; i < len(list); i++ {
+		list[i].PriorityString = enumUndent(list[i].Priority)
+	}
 
 	return list, err
 }
@@ -189,6 +244,10 @@ func (r *TaskPostgres) GetById(authorId, desk_id int) ([]dashboard.Task, error) 
 	query := fmt.Sprintf("select * from %s where desk_id = $1 and employee_id = $2",
 		taskTable)
 	err := r.db.Select(&list, query, desk_id, authorId)
+
+	for i := 0; i < len(list); i++ {
+		list[i].PriorityString = enumUndent(list[i].Priority)
+	}
 
 	return list, err
 }
@@ -201,9 +260,13 @@ func (r *TaskPostgres) GetTasksToDo(task_id, deskId int) ([]dashboard.TaskJoins,
 	from "%s" t inner join "%s" u on t.employee_id = u."user_id"
 	inner join "%s" u2 on t.author_id  = u2."user_id"
 	where desk_id = $1 and t.status = 'To Do'
-	order by priority`,
+	order by priority desc, status`,
 		taskTable, usersTable, usersTable)
 	err := r.db.Select(&list, query, deskId)
+
+	for i := 0; i < len(list); i++ {
+		list[i].PriorityString = enumUndent(list[i].Priority)
+	}
 
 	return list, err
 }
@@ -216,9 +279,13 @@ func (r *TaskPostgres) GetTasksInWork(task_id, deskId int) ([]dashboard.TaskJoin
 	from "%s" t inner join "%s" u on t.employee_id = u."user_id"
 	inner join "%s" u2 on t.author_id  = u2."user_id"
 	where desk_id = $1 and t.status = 'In Work'
-	order by priority`,
+	order by priority desc, status`,
 		taskTable, usersTable, usersTable)
 	err := r.db.Select(&list, query, deskId)
+
+	for i := 0; i < len(list); i++ {
+		list[i].PriorityString = enumUndent(list[i].Priority)
+	}
 
 	return list, err
 }
@@ -231,9 +298,13 @@ func (r *TaskPostgres) GetTasksDone(task_id, deskId int) ([]dashboard.TaskJoins,
 	from "%s" t inner join "%s" u on t.employee_id = u."user_id"
 	inner join "%s" u2 on t.author_id  = u2."user_id"
 	where desk_id = $1 and t.status = 'Done'
-	order by priority`,
+	order by priority desc, status`,
 		taskTable, usersTable, usersTable)
 	err := r.db.Select(&list, query, deskId)
+
+	for i := 0; i < len(list); i++ {
+		list[i].PriorityString = enumUndent(list[i].Priority)
+	}
 
 	return list, err
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"dashboard"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,8 @@ func (h *Handler) createTask(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	fmt.Println("kpsafpak")
 
 	id, err := h.services.Task.Create(input, userId)
 	if err != nil {
