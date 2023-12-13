@@ -1,5 +1,5 @@
 // LoginForm.js
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import '../App.css';
 import Button from 'react-bootstrap/Button';
@@ -16,9 +16,11 @@ const CreatingTask = () => {
   const [employee_id2, setEmployeeId] = useState('');
 
   const [show, setShow] = useState(false);
+  const [feedbacks_users, setFeedbacks_room] = useState([]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const options2 = []
 
   // const login = employee_id_2
   const { id } = useParams();
@@ -31,6 +33,41 @@ const CreatingTask = () => {
     { value: 'Low', label: 'Low' }
   ]
 
+  const deleteDesk = async (e) => {
+  
+    e.preventDefault();
+    axios.defaults.headers.common["Authorization"] = `Bearer ${sessionStorage.getItem("token")}`;
+    try {
+      const response = await axios.delete(`http://localhost:8001/api/room/delete/${id}`);
+      location.reload()
+    } catch (error) {
+      // Handle login error
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+
+    const fetchArticles = async () => {
+      setFeedbacks_room([]);
+      console.log(id)
+      const api_response = axios.get(`http://localhost:8001/api/room/logins/${id}`, {
+        headers: {
+          "access-control-allow-origin":"http://localhost:8001/",
+          "Authorization":`Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+
+      let data_users = await api_response;
+      setFeedbacks_room(data_users);
+
+    }
+    fetchArticles()
+
+    }, [])
+
+    const data_users = {feedbacks_users};
+
   const handleLogin = async (e) => {
     // const queryString = window.location.href;
     const desk_id = parseInt(id)
@@ -41,7 +78,7 @@ const CreatingTask = () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${sessionStorage.getItem("token")}`;
     try {
       const priority = priority2['value']
-      const login = employee_id2
+      const login = employee_id2['value']
       const response = await axios.post('http://localhost:8001/api/tasks/', 
       {
         title, description, desk_id, login, priority
@@ -57,6 +94,20 @@ const CreatingTask = () => {
     }
   };
 
+  function opt (data) {
+    Array(data.length).fill(true).map((_, i) => options2.push({value:data[i]['login'], label: data[i]['login']}))
+    
+    return true
+  }
+
+  function ar(data){
+    if (data != undefined & data != null){
+      if (data.data != undefined) {
+        return true
+      }
+    }
+  }
+  
   return (
 <>
       <Button variant="primary" onClick={handleShow}>
@@ -100,8 +151,13 @@ const CreatingTask = () => {
         value={employee_id2}
         onChange={(e) => setEmployeeId(e.target.value)}
       /> */}
-      <Form.Control type="text" placeholder="Employee" onChange={(e) => setEmployeeId(e.target.value)} />
+      {/* <Form.Control type="text" placeholder="Employee" onChange={(e) => setEmployeeId(e.target.value)} /> */}
 
+      {ar(data_users.feedbacks_users.data) ? opt(data_users.feedbacks_users.data['data']) ? <Select options={options2} onChange={setEmployeeId}/> : '' :''} 
+
+      {/* {ar(data_users.feedbacks_users.data) ? console.log(data_users.feedbacks_users.data['data']) : ''} */}
+      {/* {console.log(data_users)} */}
+      
       {/* <input
         className="inputBox"
         type="text"

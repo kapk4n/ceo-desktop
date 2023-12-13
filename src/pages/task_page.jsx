@@ -7,6 +7,7 @@ import axios from 'axios';
 import Select from 'react-select'
 import Form from 'react-bootstrap/Form';
 import Accordion from 'react-bootstrap/Accordion';
+import { FcInfo } from "react-icons/fc";
 
 function OffCanvasExample({task, ...props}) {
   const [show, setShow] = useState(false);
@@ -14,6 +15,7 @@ function OffCanvasExample({task, ...props}) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority2, setPriority] = useState('');
+  const [status2, setStatus] = useState('');
   const [employee_id2, setEmployeeId] = useState('');
 
   const handleClose = () => setShow(false);
@@ -28,6 +30,12 @@ function OffCanvasExample({task, ...props}) {
     { value: 'Low', label: 'Low' }
   ]
 
+  const options_status = [
+    { value: 'To Do', label: 'To Do' },
+    { value: 'In Work', label: 'In Work' },
+    { value: 'Done', label: 'Done' }
+  ]
+
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -35,24 +43,46 @@ function OffCanvasExample({task, ...props}) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${sessionStorage.getItem("token")}`;
     try {
       const priority = priority2['value']
+      const status = status2['value']
       const login = employee_id2
-      const response = await axios.put(`http://localhost:8001/api/tasks/${task['task_id']}`, 
+      const response = await axios.post(`http://localhost:8001/api/tasks/${task['task_id']}`, 
       {
-        title, description, login, priority
+        title, description, login, priority, status
       });
-      console.log(response.data);
+      // console.log(response.data);
       location.reload();
     } catch (error) {
       console.error(error);
     }
   };
 
+  
+
+  const [feedbacks2, setFeedbacks2] = useState([]);
+  useEffect(() => {
+
+    const fetchArticles = async () => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${sessionStorage.getItem("token")}`;
+
+      setFeedbacks2([]);
+      // const url = 'https://url.abc.com/';
+      const api_response = axios.get(`http://localhost:8001/api/room/${title['desk_id']}`, {
+      });
+      let data = await api_response;
+        setFeedbacks2(data);
+    }
+    fetchArticles()
+          // setInterval(fetchArticles(), 2000)
+    }, [])
+    const data2 = {feedbacks2};
+    // console.log(data2)
+
 
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow} className="me-2">
-        Show details 
+      <Button variant="success" onClick={handleShow} className="me-2">
+        Show details  <FcInfo />
       </Button>
       {/* {console.log(task)} */}
       <Offcanvas show={show} onHide={handleClose} {...props}>
@@ -98,41 +128,19 @@ function OffCanvasExample({task, ...props}) {
           <Modal.Title>Modal title</Modal.Title>
         </Modal.Header>
         <form onSubmit={handleUpdate}>
-      {/* <input
-        className="inputBox"
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      /> */}
+
       <Form.Control type="text" placeholder="Title" defaultValue={task['title']} onChange={(e) => setTitle(e.target.value)} />
-        {/* <input
-        className="inputBox"
-        type="text"
-        placeholder="priority"
-        value={priority}
-        onChange={(e) => setPriority(e.target.value)}
-      /> */}
+
       <Select options={options}
       onChange={setPriority}
       />
 
-            {/* <input
-        className="inputBox"
-        type="text"
-        placeholder="employee_id"
-        value={employee_id2}
-        onChange={(e) => setEmployeeId(e.target.value)}
-      /> */}
+      <Select options={options_status}
+      onChange={setStatus}
+      />
+
       <Form.Control type="text" placeholder="Employee" defaultValue={task['employee_login']} onChange={(e) => setEmployeeId(e.target.value)}/>
 
-      {/* <input
-        className="inputBox"
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      /> */}
       <Form.Control type="text" placeholder="Description" defaultValue={task['description']} onChange={(e) => setDescription(e.target.value)} />
 
       <Button variant="secondary" className='button' type="submit">Update Task</Button>
